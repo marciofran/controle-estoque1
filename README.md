@@ -1,4 +1,5 @@
 Sistema de Estoque de Peças
+
 Este projeto implementa um Sistema de Estoque de Peças simples, utilizando HTML, CSS e JavaScript. A aplicação permite o cadastro de peças, consulta do estoque e remoção de itens com base em um código de identificação. Os dados são armazenados no Local Storage do navegador, permitindo que as informações persistam entre as sessões.
 
 Funcionalidades
