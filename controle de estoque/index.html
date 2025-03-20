@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Estoque de Peças</title>
+    <style>
+        body {
+            background-color: #e0f7fa;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #00796b;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button {
+            font-weight: bold;
+            cursor: pointer;
+            color: #fff;
+        }
+        button.cadastrar {
+            background-color: #00796b;
+        }
+        button.consultar {
+            background-color: #0288d1;
+        }
+        button.remover {
+            background-color: #d32f2f;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .output {
+            white-space: pre-wrap;
+            background-color: #f1f8e9;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #cddc39;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sistema de Estoque de Peças</h1>
+    <div class="container">
+        <div class="form-group">
+            <label>Nome da Peça:</label>
+            <input type="text" id="nome" placeholder="Digite o nome da peça">
+        </div>
+        <div class="form-group">
+            <label>Fabricante:</label>
+            <input type="text" id="fabricante" placeholder="Digite o nome do fabricante">
+        </div>
+        <div class="form-group">
+            <label>Preço:</label>
+            <input type="number" id="preco" placeholder="Digite o preço da peça">
+        </div>
+        <div class="form-group">
+            <label>Código de Barras (opcional):</label>
+            <input type="text" id="codigoBarras" placeholder="Digite o código de barras">
+        </div>
+        <button class="cadastrar" onclick="cadastrarPeca()">Cadastrar Peça</button>
+        <button class="consultar" onclick="consultarPecas()">Consultar Peças</button>
+        <button class="remover" onclick="removerPeca()">Remover Peça</button>
+        <div class="output" id="output"></div>
+    </div>
+
+    <script>
+        let listaPecas = [];
+        let codigoPeca = 1;
+
+        // Carregar peças do Local Storage ao iniciar
+        window.onload = function() {
+            const storedPecas = localStorage.getItem('listaPecas');
+            if (storedPecas) {
+                listaPecas = JSON.parse(storedPecas);
+                atualizarLista();
+            }
+        }
+
+        function cadastrarPeca() {
+            const nome = document.getElementById("nome").value.trim();
+            const fabricante = document.getElementById("fabricante").value.trim();
+            const preco = document.getElementById("preco").value.trim();
+            const codigoBarras = document.getElementById("codigoBarras").value.trim();
+
+            if (!nome || !fabricante || !preco) {
+                alert("Por favor, preencha todos os campos obrigatórios.");
+                return;
+            }
+
+            const novaPeca = {
+                cod: `manual-${codigoPeca++}`,
+                nome,
+                fabricante,
+                preco,
+                codigoBarras: codigoBarras || null // Se o código de barras não for fornecido, será null
+            };
+
+            listaPecas.push(novaPeca);
+            document.getElementById("nome").value = '';
+            document.getElementById("fabricante").value = '';
+            document.getElementById("preco").value = '';
+            document.getElementById("codigoBarras").value = '';
+            atualizarLista();
+            localStorage.setItem('listaPecas', JSON.stringify(listaPecas));
+        }
+
+        function atualizarLista() {
+            if (listaPecas.length === 0) {
+                document.getElementById("output").textContent = "Nenhuma peça cadastrada.";
+            } else {
+                let result = "Peças cadastradas:\n";
+                listaPecas.forEach(peca => {
+                    result += `Código: ${peca.cod}, Nome: ${peca.nome}, Fabricante: ${peca.fabricante}, Preço: ${peca.preco}, Código de Barras: ${peca.codigoBarras || 'N/A'}\n`;
+                });
+                document.getElementById("output").textContent = result;
+            }
+        }
+
+        function consultarPecas() {
+            atualizarLista();
+        }
+
+        function removerPeca() {
+            const cod = prompt("Digite o código da peça a ser removida (ou código de barras):").trim();
+            
+            if (!cod) {
+                alert("Por favor, insira um código válido.");
+                return;
+            }
+
+            const index = listaPecas.findIndex(peca => peca.cod === cod || peca.codigoBarras === cod);
+
+            if (index !== -1) {
+                listaPecas.splice(index, 1);
+                alert(`Peça com código ${cod} removida com sucesso.`);
+                atualizarLista();
+                localStorage.setItem('listaPecas', JSON.stringify(listaPecas)); // Atualiza o Local Storage após a remoção
+            } else {
+                alert("Peça não encontrada.");
+            }
+        }
+    </script>
+</body>
+</html>
